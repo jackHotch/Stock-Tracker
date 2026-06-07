@@ -12,6 +12,7 @@ import { WatchlistModule } from './watchlist/watchlist.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
+      envFilePath: '.env.local',
     }),
     DbModule,
     EmailsModule,
