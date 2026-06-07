@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { DbModule } from './db/db.module';
+import { EmailsModule } from './emails/emails.module';
+import { WatchlistModule } from './watchlist/watchlist.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { DbModule } from './db/db.module';
       load: [configuration],
     }),
     DbModule,
+    EmailsModule,
+    WatchlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
