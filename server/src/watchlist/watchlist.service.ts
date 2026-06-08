@@ -38,4 +38,29 @@ export class WatchlistService {
 
     return result.rows[0];
   }
+
+  async findAll(): Promise<WatchlistItem[]> {
+    const result = await this.db.query<WatchlistItem>(`
+      SELECT id, ticker, added_at
+      FROM watchlist
+      ORDER BY ticker ASC;
+      `);
+
+    return result.rows;
+  }
+
+  async remove(ticker: string): Promise<void> {
+    const existing = await this.findOne(ticker);
+
+    if (!existing) {
+      throw new ConflictException(`${ticker} is already in the watchlist`);
+    }
+
+    await this.db.query(
+      `
+      DELETE FROM watchlist
+      WHERE ticker = $1`,
+      [ticker],
+    );
+  }
 }
