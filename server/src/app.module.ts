@@ -9,6 +9,7 @@ import { EmailsModule } from './emails/emails.module';
 import { WatchlistModule } from './watchlist/watchlist.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
+import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtAuthGuard } from './auth/guards/jwt.guard';
     EmailsModule,
     WatchlistModule,
     AuthModule,
+    AlertsModule,
   ],
   controllers: [AppController],
   providers: [
