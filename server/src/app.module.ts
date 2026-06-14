@@ -10,6 +10,7 @@ import { WatchlistModule } from './watchlist/watchlist.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
 import { AlertsModule } from './alerts/alerts.module';
+import { StocksModule } from './stocks/stocks.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AlertsModule } from './alerts/alerts.module';
     WatchlistModule,
     AuthModule,
     AlertsModule,
+    StocksModule,
   ],
   controllers: [AppController],
   providers: [
