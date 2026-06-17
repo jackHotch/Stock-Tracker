@@ -12,4 +12,15 @@ export class StocksController {
       days ? Number(days) : null,
     );
   }
+
+  @Get('/:ticker/news')
+  getNews(
+    @Param('ticker') ticker: string,
+    @Query('maxItems') maxItems: string,
+  ) {
+    return this.stocksService.getNews(
+      ticker,
+      maxItems ? Number(maxItems) : null,
+    );
+  }
 }

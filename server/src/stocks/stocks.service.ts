@@ -4,7 +4,6 @@ import { PriceData } from './types/types';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 
-
 @Injectable()
 export class StocksService {
   private readonly logger = new Logger(StocksService.name);
@@ -73,6 +72,48 @@ export class StocksService {
       if (err instanceof Error) {
         this.logger.error(`[${ticker}] Failed to fetch price: ${err.message}`);
         return null;
+      }
+      return null;
+    }
+  }
+
+  async getNews(
+    ticker: string,
+    maxItems: number | null,
+  ): Promise<string[] | null> {
+    const maxNumItems = maxItems ?? 5;
+
+    try {
+      const url = `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${ticker}&region=US&lang=en-US`;
+      const { data } = await axios.get(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        timeout: 8000,
+      });
+
+      const headlines: string[] = [];
+      const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+      const titleRegex =
+        /<title><!\[CDATA\[(.*?)\]\]><\/title>|<title>(.*?)<\/title>/;
+      const pubRegex = /<pubDate>(.*?)<\/pubDate>/;
+
+      let match: RegExpExecArray | null;
+      while (
+        (match = itemRegex.exec(data)) !== null &&
+        headlines.length < maxNumItems
+      ) {
+        const block = match[1];
+        const titleMatch = titleRegex.exec(block);
+        const pubMatch = pubRegex.exec(block);
+        const title = (titleMatch?.[1] ?? titleMatch?.[2] ?? '').trim();
+        const pub = (pubMatch?.[1] ?? '').substring(0, 16).trim();
+        if (title) headlines.push(pub ? `${pub} — ${title}` : title);
+      }
+
+      return headlines;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        this.logger.warn(`[${ticker}] Could not fetch news: ${err.message}`);
+        return ['(News unavailable)'];
       }
       return null;
     }
