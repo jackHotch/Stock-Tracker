@@ -4,6 +4,7 @@ import { PriceData } from './types/types';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 
+
 @Injectable()
 export class StocksService {
   private readonly logger = new Logger(StocksService.name);
@@ -20,7 +21,7 @@ export class StocksService {
     const lookbackDays = days ?? this.config.get<number>('LOOKBACK_DAYS', 14);
     try {
       const now = Math.floor(Date.now() / 1000);
-      const from = now - (lookbackDays + 7) * 86400;
+      const from = now - lookbackDays * 86400;
 
       const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`;
       const { data } = await axios.get(url, {
@@ -40,8 +41,7 @@ export class StocksService {
 
       const valid = timestamps
         .map((ts, i) => ({ ts, close: closes[i] }))
-        .filter((d) => d.close != null)
-        .slice(-lookbackDays);
+        .filter((d) => d.close != null);
 
       if (valid.length < 2) {
         this.logger.warn(
