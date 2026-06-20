@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';
-import { Alert } from '../alerts/types/alert.type';
+import { AlertItemDto } from '../alerts/dto/alert-item.dto';
 
 @Injectable()
 export class EmailsService {
@@ -12,7 +12,7 @@ export class EmailsService {
     this.resend = new Resend(this.config.get('RESEND_API_KEY'));
   }
 
-  async sendAlertEmail(alerts: Alert[]): Promise<boolean> {
+  async sendAlertEmail(alerts: AlertItemDto[]): Promise<boolean> {
     const from = this.config.get('EMAIL_FROM');
     const to = this.config.get('EMAIL_TO');
     const threshold = this.config.get('THRESHOLD_PCT', 8);
@@ -60,7 +60,7 @@ export class EmailsService {
   }
 
   private buildHtml(
-    alerts: Alert[],
+    alerts: AlertItemDto[],
     today: string,
     threshold: number,
     lookback: number,
@@ -70,11 +70,11 @@ export class EmailsService {
         const emoji = a.direction === 'up' ? '📈' : '📉';
         const color = a.direction === 'up' ? '#16a34a' : '#dc2626';
         const sign = a.direction === 'up' ? '+' : '';
-        const newsItems = (a.newsHeadlines ?? [])
-          .map((h) => `<li style="margin-bottom:4px;">${h}</li>`)
+        const newsItems = (a.news_headlines ?? [])
+          .map((h: string) => `<li style="margin-bottom:4px;">${h}</li>`)
           .join('');
-        const dateStart = this.formatDate(a.dateStart);
-        const dateEnd = this.formatDate(a.dateEnd);
+        const dateStart = this.formatDate(a.date_start);
+        const dateEnd = this.formatDate(a.date_end);
 
         return `
         <div style="border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin-bottom:20px;background:#fff;">
@@ -82,16 +82,16 @@ export class EmailsService {
             <span style="font-size:28px;">${emoji}</span>
             <div>
               <h2 style="margin:0;font-size:22px;font-family:monospace;color:#111;">${a.ticker}</h2>
-              <span style="font-size:20px;font-weight:700;color:${color};">${sign}${a.pctChange}%</span>
+              <span style="font-size:20px;font-weight:700;color:${color};">${sign}${a.pct_change}%</span>
               <span style="color:#6b7280;font-size:13px;"> over ${lookback} days</span>
             </div>
           </div>
           <table style="width:100%;font-size:14px;color:#374151;margin-bottom:14px;">
             <tr>
               <td style="padding:4px 0;"><b>Start (${dateStart}):</b></td>
-              <td>$${a.priceStart}</td>
+              <td>$${a.price_start}</td>
               <td style="padding:4px 0;"><b>Now (${dateEnd}):</b></td>
-              <td>$${a.priceEnd}</td>
+              <td>$${a.price_end}</td>
             </tr>
           </table>
           <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#6b7280;

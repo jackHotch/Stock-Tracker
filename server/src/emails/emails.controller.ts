@@ -1,6 +1,6 @@
 import { Controller, Post, HttpCode } from '@nestjs/common';
 import { EmailsService } from './emails.service';
-import { Alert } from '../alerts/types/alert.type';
+import { AlertItemDto } from '../alerts/dto/alert-item.dto';
 
 @Controller('email')
 export class EmailsController {
@@ -14,23 +14,23 @@ export class EmailsController {
   @Post('test')
   @HttpCode(200)
   async sendTest() {
-    const fakeAlert: Alert = {
+    const fakeAlert: AlertItemDto = {
       id: 0,
       ticker: 'TEST',
-      pctChange: 12.34,
-      priceStart: 100,
-      priceEnd: 112.34,
-      dateStart: new Date(Date.now() - 14 * 86400000),
-      dateEnd: new Date(),
+      pct_change: 12.34,
+      price_start: 100,
+      price_end: 112.34,
+      date_start: new Date(Date.now() - 14 * 86400000),
+      date_end: new Date(),
       direction: 'up',
-      lookbackDays: 14,
-      thresholdPct: 8,
-      newsHeadlines: [
+      lookback_days: 14,
+      threshold_pct: 8,
+      news_headlines: [
         'This is a test headline to confirm formatting',
         'Resend is configured correctly if you are reading this',
       ],
-      emailSent: false,
-      triggeredAt: new Date(),
+      email_sent: false,
+      triggered_at: new Date(),
     };
 
     const sent = await this.emailService.sendAlertEmail([fakeAlert]);

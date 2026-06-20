@@ -53,19 +53,16 @@ export class StocksService {
 
       const pctChange = ((last.close - first.close) / first.close) * 100;
 
-      const fmt = (ts: number) =>
-        new Date(ts * 1000).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-        });
+      const toISODate = (ts: number) =>
+        new Date(ts * 1000).toISOString().slice(0, 10);
 
       return {
         ticker,
         pctChange: Math.round(pctChange * 100) / 100,
         priceStart: Math.round(first.close * 100) / 100,
         priceEnd: Math.round(last.close * 100) / 100,
-        dateStart: fmt(first.ts),
-        dateEnd: fmt(last.ts),
+        dateStart: toISODate(first.ts),
+        dateEnd: toISODate(last.ts),
         direction: pctChange >= 0 ? 'up' : 'down',
       };
     } catch (err: unknown) {
@@ -77,10 +74,7 @@ export class StocksService {
     }
   }
 
-  async getNews(
-    ticker: string,
-    maxItems: number | null,
-  ): Promise<string[] | null> {
+  async getNews(ticker: string, maxItems = 5): Promise<string[] | null> {
     const maxNumItems = maxItems ?? 5;
 
     try {

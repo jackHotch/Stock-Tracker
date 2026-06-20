@@ -20,7 +20,7 @@ export class StocksController {
   ) {
     return this.stocksService.getNews(
       ticker,
-      maxItems ? Number(maxItems) : null,
+      maxItems ? Number(maxItems) : undefined,
     );
   }
 }

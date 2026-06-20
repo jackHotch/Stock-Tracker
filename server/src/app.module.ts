@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
 import { AlertsModule } from './alerts/alerts.module';
 import { StocksModule } from './stocks/stocks.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StocksModule } from './stocks/stocks.module';
     AuthModule,
     AlertsModule,
     StocksModule,
+    SchedulerModule,
   ],
   controllers: [AppController],
   providers: [
