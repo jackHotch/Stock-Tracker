@@ -4,6 +4,9 @@ import * as dotenv from 'dotenv';
 import { Pool, PoolClient } from 'pg';
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env.local') });
+if (!process.env.DATABASE_STRING) {
+  dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+}
 
 const MIGRATIONS_DIR = path.resolve(__dirname, '..', 'migrations');
 
