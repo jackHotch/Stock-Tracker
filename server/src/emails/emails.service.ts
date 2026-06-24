@@ -33,9 +33,13 @@ export class EmailsService {
       year: 'numeric',
     });
 
+    const sorted = [...alerts].sort(
+      (a, b) => b.pct_change - a.pct_change,
+    );
+
     const subject = `Stock Trend Alert — ${alerts.length} ticker(s) moved ±${threshold}%+ (${today})`;
     const html = this.buildHtml(
-      alerts,
+      sorted,
       today,
       Number(threshold),
       Number(lookback),
