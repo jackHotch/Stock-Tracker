@@ -50,9 +50,7 @@ export class EmailsService {
       this.logger.log(`Alert email sent to ${to} (${alerts.length} alerts)`);
       return true;
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        this.logger.error(`Failed to send email: ${err.message}`);
-      }
+      this.logger.error(`Failed to send email: ${JSON.stringify(err)}`);
       return false;
     }
   }
