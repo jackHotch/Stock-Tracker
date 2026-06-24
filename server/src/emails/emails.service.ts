@@ -42,7 +42,11 @@ export class EmailsService {
     );
 
     try {
-      await this.resend.emails.send({ from, to, subject, html });
+      const { error } = await this.resend.emails.send({ from, to, subject, html });
+      if (error) {
+        this.logger.error(`Failed to send email: ${error.message}`);
+        return false;
+      }
       this.logger.log(`Alert email sent to ${to} (${alerts.length} alerts)`);
       return true;
     } catch (err: unknown) {
