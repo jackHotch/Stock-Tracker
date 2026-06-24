@@ -99,7 +99,9 @@ export class EmailsService {
             <tr>
               <td style="padding:4px 0;"><b>Start (${dateStart}):</b></td>
               <td>$${a.price_start}</td>
-              <td style="padding:4px 0;"><b>Now (${dateEnd}):</b></td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0;"><b>End (${dateEnd}):</b></td>
               <td>$${a.price_end}</td>
             </tr>
           </table>
