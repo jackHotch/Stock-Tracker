@@ -18,7 +18,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-      envFilePath: '.env.local',
+      envFilePath: ['.env.local', '.env'],
     }),
     DbModule,
     EmailsModule,

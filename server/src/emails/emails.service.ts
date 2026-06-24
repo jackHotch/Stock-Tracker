@@ -6,10 +6,13 @@ import { AlertItemDto } from '../alerts/dto/alert-item.dto';
 @Injectable()
 export class EmailsService {
   private readonly logger = new Logger(EmailsService.name);
-  private resend: Resend;
+  private resend?: Resend;
 
   constructor(private readonly config: ConfigService) {
-    this.resend = new Resend(this.config.get('RESEND_API_KEY'));
+    const apiKey = this.config.get<string>('RESEND_API_KEY');
+    if (apiKey) {
+      this.resend = new Resend(apiKey);
+    }
   }
 
   async sendAlertEmail(alerts: AlertItemDto[]): Promise<boolean> {
@@ -18,7 +21,7 @@ export class EmailsService {
     const threshold = this.config.get('THRESHOLD_PCT', 8);
     const lookback = this.config.get('LOOKBACK_DAYS', 14);
 
-    if (!from || !to || !this.config.get('RESEND_API_KEY')) {
+    if (!from || !to || !this.resend) {
       this.logger.warn('Email credentials not configured — skipping email');
       return false;
     }
