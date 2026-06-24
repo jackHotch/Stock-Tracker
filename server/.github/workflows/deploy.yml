@@ -26,5 +26,6 @@ jobs:
             cd ~/stock-watcher-api
             git pull origin production
             npm install
+            npm run migrate
             npm run build
             pm2 reload market-trend
