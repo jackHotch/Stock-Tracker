@@ -87,7 +87,7 @@ export class EmailsService {
 
         return `
         <div style="border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin-bottom:20px;background:#fff;">
-          <div style="display:flex;align-items:center;gap:20px;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:32px;margin-bottom:12px;">
             <span style="font-size:28px;">${emoji}</span>
             <div>
               <h2 style="margin:0;font-size:22px;font-family:monospace;color:#111;">${a.ticker}</h2>
