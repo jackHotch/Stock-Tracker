@@ -28,7 +28,7 @@ export class SchedulerService {
    * version is active here. To use env-driven schedule, swap to the
    * onModuleInit pattern in the comment below.
    */
-  @Cron('0 23 * * 1-5') // 7:00 PM ET = 23:00 UTC, Mon-Fri
+  @Cron('15 21 * * 1-5') // 4:15 PM EST = 21:15 UTC, Mon-Fri
   async runWatcher() {
     this.logger.log('⏰ Watcher triggered');
     await this.executeWatcher();
