@@ -23,7 +23,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/stock-watcher-api
+            cd ~/market-trend/server
             git pull origin production
             npm install
             npm run migrate
