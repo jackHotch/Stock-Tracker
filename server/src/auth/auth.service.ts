@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { DatabaseService } from '../db/db.service';
@@ -12,6 +12,8 @@ interface UserRow {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly db: DatabaseService,
     private readonly jwtService: JwtService,
@@ -30,6 +32,8 @@ export class AuthService {
     if (!valid) throw new UnauthorizedException('Invalid credentials');
 
     const payload = { sub: user.id, email: user.email };
+
+    this.logger.log(`${user.email} successfully authenticated`);
     return { access_token: await this.jwtService.signAsync(payload) };
   }
 }
