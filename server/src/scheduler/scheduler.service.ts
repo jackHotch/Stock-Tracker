@@ -20,15 +20,19 @@ export class SchedulerService {
   ) {}
 
   /**
-   * Runs every weekday at 7:00 PM ET by default.
+   * Runs every other day at 7:00 PM ET.
    * Override with CRON_SCHEDULE env var.
    *
    * Note: @Cron() decorator requires a literal string — dynamic cron from env
    * requires CronJob from @nestjs/schedule. Both are shown; the decorator
    * version is active here. To use env-driven schedule, swap to the
    * onModuleInit pattern in the comment below.
+   *
+   * Caveat: the day-of-month step resets at each month boundary, so months
+   * with an odd number of days run on consecutive days once (e.g. the
+   * 31st and the 1st) before returning to the every-other-day cadence.
    */
-  @Cron('0 19 * * *', { timeZone: 'America/New_York' })
+  @Cron('0 19 */2 * *', { timeZone: 'America/New_York' })
   async runWatcher() {
     this.logger.log('⏰ Watcher triggered');
     await this.executeWatcher();
