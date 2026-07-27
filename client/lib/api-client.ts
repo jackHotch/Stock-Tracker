@@ -40,3 +40,10 @@ export function clearAuthToken() {
     localStorage.removeItem(TOKEN_KEY)
   }
 }
+
+export function getAuthToken() {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem(TOKEN_KEY)
+  }
+  return null
+}
