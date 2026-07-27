@@ -1,10 +1,12 @@
 "use client"
 
 import { Container } from "@/components/container"
+import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useLogin } from "@/hooks/use-login"
+import { setAuthToken } from "@/lib/api-client"
 import { TrendingUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -21,7 +23,7 @@ export default function Login() {
       { email, password },
       {
         onSuccess: (data) => {
-          localStorage.setItem("access_token", data.access_token)
+          setAuthToken(data.access_token)
           router.push("/dashboard")
         },
       }
@@ -30,9 +32,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen min-w-screen flex-col gap-12 p-6">
-      <h1 className="flex items-center gap-2">
-        MarketTrend <TrendingUp size={40} color="var(--primary)" />
-      </h1>
+      <Logo />
       <form onSubmit={handleLogin}>
         <Container className="flex w-full flex-col gap-8 p-6 md:mx-auto md:max-w-130">
           <div>
