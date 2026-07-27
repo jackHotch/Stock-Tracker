@@ -13,12 +13,28 @@ export function apiGet<T>(url: string, config?: AxiosRequestConfig) {
   return apiClient.get<T>(url, config).then((res) => res.data)
 }
 
-export function apiPost<T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig) {
+export function apiPost<T, D = unknown>(
+  url: string,
+  data?: D,
+  config?: AxiosRequestConfig
+) {
   return apiClient.post<T>(url, data, config).then((res) => res.data)
 }
 
-export function apiPut<T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig) {
+export function apiPut<T, D = unknown>(
+  url: string,
+  data?: D,
+  config?: AxiosRequestConfig
+) {
   return apiClient.put<T>(url, data, config).then((res) => res.data)
+}
+
+export function apiPatch<T, D = unknown>(
+  url: string,
+  data?: D,
+  config?: AxiosRequestConfig
+) {
+  return apiClient.patch<T>(url, data, config).then((res) => res.data)
 }
 
 export function apiDelete<T = void>(url: string, config?: AxiosRequestConfig) {
@@ -28,7 +44,7 @@ export function apiDelete<T = void>(url: string, config?: AxiosRequestConfig) {
 export function useApiQuery<T>(
   queryKey: readonly unknown[],
   url: string,
-  options?: Omit<UseQueryOptions<T, ApiError>, "queryKey" | "queryFn">,
+  options?: Omit<UseQueryOptions<T, ApiError>, "queryKey" | "queryFn">
 ) {
   return useQuery<T, ApiError>({
     queryKey,
@@ -39,7 +55,7 @@ export function useApiQuery<T>(
 
 export function useApiMutation<T, V = unknown>(
   mutationFn: (variables: V) => Promise<T>,
-  options?: UseMutationOptions<T, ApiError, V>,
+  options?: UseMutationOptions<T, ApiError, V>
 ) {
   return useMutation<T, ApiError, V>({
     mutationFn,
