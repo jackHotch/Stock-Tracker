@@ -68,7 +68,7 @@
     --accent: color-mix(in oklch, var(--primary) 10%, white);
     --accent-foreground: color-mix(in oklch, var(--primary) 50%, black);
     --border: color-mix(in srgb, var(--foreground) 16%, transparent);
-    --input: #e9e9ea;
+    --input: #d7d7d7;
     --ring: var(--primary);
 
     /* gain/loss semantics — sampled from the screenshot, not defined in test-css.css */
@@ -159,3 +159,26 @@
   a { color: var(--primary); text-underline-offset: 3px; }
   ::selection { background: color-mix(in srgb, var(--primary) 30%, transparent); }
 }
+
+@layer utilities {
+  .corner-marks {
+    position: relative;
+  }
+  .corner-marks::after {
+    --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='7.5' y='0' width='1' height='16'/%3E%3Crect x='0' y='7.5' width='16' height='1'/%3E%3C/svg%3E");
+    content: "";
+    position: absolute;
+    inset: -6.5px;
+    pointer-events: none;
+    background-color: color-mix(in srgb, var(--foreground) 45%, transparent);
+    -webkit-mask-image: var(--mark), var(--mark), var(--mark), var(--mark);
+    mask-image: var(--mark), var(--mark), var(--mark), var(--mark);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 13px 13px;
+    mask-size: 13px 13px;
+    -webkit-mask-position: top left, top right, bottom left, bottom right;
+    mask-position: top left, top right, bottom left, bottom right;
+  }
+}
+
