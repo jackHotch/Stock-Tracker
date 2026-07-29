@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { getAuthToken } from "@/lib/api-client"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { getAuthToken } from '@/lib/api-client'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export function useAuthGuard() {
   const router = useRouter()
@@ -10,7 +10,7 @@ export function useAuthGuard() {
 
   useEffect(() => {
     if (!getAuthToken()) {
-      router.replace("/")
+      router.replace('/')
       return
     }
     setIsChecking(false)

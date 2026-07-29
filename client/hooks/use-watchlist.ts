@@ -1,5 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query"
-import { apiDelete, apiPost, useApiMutation, useApiQuery } from "@/hooks/use-api"
+import { useQueryClient } from '@tanstack/react-query'
+import { apiDelete, apiPost, useApiMutation, useApiQuery } from '@/hooks/use-api'
 
 export interface WatchlistItem {
   id: number
@@ -7,20 +7,20 @@ export interface WatchlistItem {
   added_at: string
 }
 
-const watchlistKey = ["watchlist"] as const
+const watchlistKey = ['watchlist'] as const
 
 export function useWatchlist() {
-  return useApiQuery<WatchlistItem[]>(watchlistKey, "/watchlist")
+  return useApiQuery<WatchlistItem[]>(watchlistKey, '/watchlist')
 }
 
 export function useAddToWatchlist() {
   const queryClient = useQueryClient()
 
   return useApiMutation<WatchlistItem, { ticker: string }>(
-    (body) => apiPost<WatchlistItem, { ticker: string }>("/watchlist", body),
+    (body) => apiPost<WatchlistItem, { ticker: string }>('/watchlist', body),
     {
       onSuccess: () => queryClient.invalidateQueries({ queryKey: watchlistKey }),
-    },
+    }
   )
 }
 

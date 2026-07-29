@@ -13,10 +13,7 @@ export class StocksService {
     private readonly config: ConfigService,
   ) {}
 
-  async getPriceChange(
-    ticker: string,
-    days: number | null,
-  ): Promise<PriceData | null> {
+  async getPriceChange(ticker: string, days: number | null): Promise<PriceData | null> {
     const lookbackDays = days ?? this.config.get<number>('LOOKBACK_DAYS', 14);
     try {
       const now = Math.floor(Date.now() / 1000);
@@ -38,14 +35,10 @@ export class StocksService {
       const timestamps: number[] = result.timestamp ?? [];
       const closes: number[] = result.indicators?.quote?.[0]?.close ?? [];
 
-      const valid = timestamps
-        .map((ts, i) => ({ ts, close: closes[i] }))
-        .filter((d) => d.close != null);
+      const valid = timestamps.map((ts, i) => ({ ts, close: closes[i] })).filter((d) => d.close != null);
 
       if (valid.length < 2) {
-        this.logger.warn(
-          `[${ticker}] Not enough data points (${valid.length})`,
-        );
+        this.logger.warn(`[${ticker}] Not enough data points (${valid.length})`);
         return null;
       }
       const first = valid[0];
@@ -53,8 +46,7 @@ export class StocksService {
 
       const pctChange = ((last.close - first.close) / first.close) * 100;
 
-      const toISODate = (ts: number) =>
-        new Date(ts * 1000).toISOString().slice(0, 10);
+      const toISODate = (ts: number) => new Date(ts * 1000).toISOString().slice(0, 10);
 
       return {
         ticker,
@@ -86,15 +78,11 @@ export class StocksService {
 
       const headlines: string[] = [];
       const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-      const titleRegex =
-        /<title><!\[CDATA\[(.*?)\]\]><\/title>|<title>(.*?)<\/title>/;
+      const titleRegex = /<title><!\[CDATA\[(.*?)\]\]><\/title>|<title>(.*?)<\/title>/;
       const pubRegex = /<pubDate>(.*?)<\/pubDate>/;
 
       let match: RegExpExecArray | null;
-      while (
-        (match = itemRegex.exec(data)) !== null &&
-        headlines.length < maxNumItems
-      ) {
+      while ((match = itemRegex.exec(data)) !== null && headlines.length < maxNumItems) {
         const block = match[1];
         const titleMatch = titleRegex.exec(block);
         const pubMatch = pubRegex.exec(block);

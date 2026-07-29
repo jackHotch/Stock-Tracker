@@ -1,21 +1,21 @@
-"use client"
+'use client'
 
-import { Container } from "@/components/container"
-import { Logo } from "@/components/logo"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useLogin } from "@/hooks/use-login"
-import { setAuthToken } from "@/lib/api-client"
-import { TrendingUp } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { Container } from '@/components/container'
+import { Logo } from '@/components/logo'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useLogin } from '@/hooks/use-login'
+import { setAuthToken } from '@/lib/api-client'
+import { TrendingUp } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function Login() {
   const router = useRouter()
   const { mutate: login, isPending } = useLogin()
-  const [email, setEmail] = useState<string>("")
-  const [password, setPassword] = useState<string>("")
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
 
   const handleLogin = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -24,7 +24,7 @@ export default function Login() {
       {
         onSuccess: (data) => {
           setAuthToken(data.access_token)
-          router.push("/dashboard")
+          router.push('/dashboard')
         },
       }
     )
@@ -52,16 +52,11 @@ export default function Login() {
 
           <div className="space-y-1">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
 
           <Button type="submit" size="lg" className="w-full">
-            {isPending ? "Signing in..." : "Sign in"}
+            {isPending ? 'Signing in...' : 'Sign in'}
           </Button>
         </Container>
       </form>
