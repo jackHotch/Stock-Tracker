@@ -32,7 +32,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen min-w-screen flex-col gap-12 p-6">
-      <Logo />
+      <Logo size="large" />
       <form onSubmit={handleLogin}>
         <Container className="flex w-full flex-col gap-8 p-6 md:mx-auto md:max-w-130">
           <div>
