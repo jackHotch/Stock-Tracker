@@ -51,9 +51,7 @@ export class SchedulerService {
     const threshold = this.config.get<number>('THRESHOLD_PCT', 8);
     const lookback = this.config.get<number>('LOOKBACK_DAYS', 14);
 
-    this.logger.log(
-      `Checking ${tickers.length} tickers (±${threshold}% / ${lookback}d)`,
-    );
+    this.logger.log(`Checking ${tickers.length} tickers (±${threshold}% / ${lookback}d)`);
 
     const triggered: AlertItemDto[] = [];
 
@@ -63,9 +61,7 @@ export class SchedulerService {
 
       if (!price) continue;
 
-      this.logger.log(
-        `    ${price.dateStart}→${price.dateEnd}: ${price.pctChange > 0 ? '+' : ''}${price.pctChange}%`,
-      );
+      this.logger.log(`    ${price.dateStart}→${price.dateEnd}: ${price.pctChange > 0 ? '+' : ''}${price.pctChange}%`);
 
       if (Math.abs(price.pctChange) >= Number(threshold)) {
         this.logger.log(`    ✅ ALERT`);
@@ -99,9 +95,7 @@ export class SchedulerService {
       }
     }
 
-    this.logger.log(
-      `Done. ${triggered.length} alert(s), email sent: ${emailSent}`,
-    );
+    this.logger.log(`Done. ${triggered.length} alert(s), email sent: ${emailSent}`);
     return { checked: tickers.length, triggered: triggered.length, emailSent };
   }
 }

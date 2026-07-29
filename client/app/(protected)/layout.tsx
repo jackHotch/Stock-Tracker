@@ -1,6 +1,7 @@
-"use client"
+'use client'
 
-import { useAuthGuard } from "@/hooks/use-auth-guard"
+import { Header } from '@/components/header'
+import { useAuthGuard } from '@/hooks/use-auth-guard'
 
 export default function ProtectedLayout({
   children,
@@ -13,5 +14,10 @@ export default function ProtectedLayout({
     return null
   }
 
-  return <>{children}</>
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  )
 }

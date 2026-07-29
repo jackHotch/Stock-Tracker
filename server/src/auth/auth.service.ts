@@ -20,10 +20,7 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginDto): Promise<{ access_token: string }> {
-    const result = await this.db.query<UserRow>(
-      'SELECT id, email, password FROM users WHERE email = $1',
-      [dto.email],
-    );
+    const result = await this.db.query<UserRow>('SELECT id, email, password FROM users WHERE email = $1', [dto.email]);
 
     const user = result.rows[0];
     if (!user) throw new UnauthorizedException('Invalid credentials');

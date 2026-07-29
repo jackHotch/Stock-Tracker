@@ -7,20 +7,11 @@ export class StocksController {
 
   @Get('/:ticker/price/change')
   getPriceChange(@Param('ticker') ticker: string, @Query('days') days: string) {
-    return this.stocksService.getPriceChange(
-      ticker,
-      days ? Number(days) : null,
-    );
+    return this.stocksService.getPriceChange(ticker, days ? Number(days) : null);
   }
 
   @Get('/:ticker/news')
-  getNews(
-    @Param('ticker') ticker: string,
-    @Query('maxItems') maxItems: string,
-  ) {
-    return this.stocksService.getNews(
-      ticker,
-      maxItems ? Number(maxItems) : undefined,
-    );
+  getNews(@Param('ticker') ticker: string, @Query('maxItems') maxItems: string) {
+    return this.stocksService.getNews(ticker, maxItems ? Number(maxItems) : undefined);
   }
 }
