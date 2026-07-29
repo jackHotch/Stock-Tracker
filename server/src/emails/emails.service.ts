@@ -33,20 +33,18 @@ export class EmailsService {
       year: 'numeric',
     });
 
-    const sorted = [...alerts].sort(
-      (a, b) => b.pct_change - a.pct_change,
-    );
+    const sorted = [...alerts].sort((a, b) => b.pct_change - a.pct_change);
 
     const subject = `Stock Trend Alert — ${alerts.length} ticker(s) moved ±${threshold}%+ (${today})`;
-    const html = this.buildHtml(
-      sorted,
-      today,
-      Number(threshold),
-      Number(lookback),
-    );
+    const html = this.buildHtml(sorted, today, Number(threshold), Number(lookback));
 
     try {
-      const { error } = await this.resend.emails.send({ from, to, subject, html });
+      const { error } = await this.resend.emails.send({
+        from,
+        to,
+        subject,
+        html,
+      });
       if (error) {
         this.logger.error(`Failed to send email: ${error.message}`);
         return false;
@@ -68,12 +66,7 @@ export class EmailsService {
     });
   }
 
-  private buildHtml(
-    alerts: AlertItemDto[],
-    today: string,
-    threshold: number,
-    lookback: number,
-  ): string {
+  private buildHtml(alerts: AlertItemDto[], today: string, threshold: number, lookback: number): string {
     const blocks = alerts
       .map((a) => {
         const emoji = a.direction === 'up' ? '📈' : '📉';

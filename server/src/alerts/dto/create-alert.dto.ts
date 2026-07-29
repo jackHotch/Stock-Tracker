@@ -1,4 +1,16 @@
-import { IsString, IsNotEmpty, MaxLength, IsNumber, IsPositive, IsInt, IsIn, IsOptional, IsArray, IsDateString, Matches } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsNumber,
+  IsPositive,
+  IsInt,
+  IsIn,
+  IsOptional,
+  IsArray,
+  IsDateString,
+  Matches,
+} from 'class-validator';
 
 export class CreateAlertDto {
   @IsString()

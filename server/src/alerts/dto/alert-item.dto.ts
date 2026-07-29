@@ -1,4 +1,16 @@
-import { IsInt, IsPositive, IsString, IsNotEmpty, MaxLength, IsNumber, IsIn, IsBoolean, IsDate, IsOptional, IsArray } from 'class-validator';
+import {
+  IsInt,
+  IsPositive,
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsNumber,
+  IsIn,
+  IsBoolean,
+  IsDate,
+  IsOptional,
+  IsArray,
+} from 'class-validator';
 
 export class AlertItemDto {
   @IsInt()
