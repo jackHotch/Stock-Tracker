@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { AddTickerDto } from './dto/add-ticker.dto';
 import { WatchlistItem } from './dto/watchlist-item.dto';
 import { DatabaseService } from 'src/db/db.service';
+import axios from 'axios';
 
 @Injectable()
 export class WatchlistService {
@@ -14,13 +15,24 @@ export class WatchlistService {
       throw new ConflictException(`${item.ticker} is already in the watchlist`);
     }
 
+    const url = 'https://query1.finance.yahoo.com/v1/finance/search';
+    const { data } = await axios.get(url, {
+      params: { q: item.ticker, quotesCount: 1, newsCount: 0 },
+      timeout: 10000,
+    });
+
+    console.log(data);
+
+    const name = data.quotes[0].longname ?? '';
+    const sector = data.quotes[0].sector || 'ETF';
+
     const result = await this.db.query<WatchlistItem>(
       `
-      INSERT INTO watchlist (ticker)
-      VALUES ($1)
+      INSERT INTO watchlist (ticker, name, sector)
+      VALUES ($1, $2, $3)
       RETURNING *;
       `,
-      [item.ticker],
+      [item.ticker, name, sector],
     );
 
     return result.rows[0];
