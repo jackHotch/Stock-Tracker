@@ -19,7 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migrate": "ts-node --project tsconfig.scripts.json scripts/migrate.ts up",
-    "migrate:rollback": "ts-node --project tsconfig.scripts.json scripts/migrate.ts down"
+    "migrate:rollback": "ts-node --project tsconfig.scripts.json scripts/migrate.ts down",
+    "populate-watchlist": "ts-node --project tsconfig.scripts.json scripts/watchlist/populate_name_and_sector.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
