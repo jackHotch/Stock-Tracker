@@ -21,8 +21,6 @@ export class WatchlistService {
       timeout: 10000,
     });
 
-    console.log(data);
-
     const name = data.quotes[0].longname ?? '';
     const sector = data.quotes[0].sector || 'ETF';
 
@@ -41,7 +39,7 @@ export class WatchlistService {
   async findOne(ticker: string): Promise<WatchlistItem> {
     const result = await this.db.query<WatchlistItem>(
       `
-      SELECT id, ticker, added_at
+      SELECT id, ticker, name, sector, added_at
       FROM watchlist
       WHERE ticker = $1;
     `,
@@ -53,7 +51,7 @@ export class WatchlistService {
 
   async findAll(): Promise<WatchlistItem[]> {
     const result = await this.db.query<WatchlistItem>(`
-      SELECT id, ticker, added_at
+      SELECT id, ticker, name, sector, added_at
       FROM watchlist
       ORDER BY ticker ASC;
       `);
@@ -65,7 +63,7 @@ export class WatchlistService {
     const existing = await this.findOne(ticker);
 
     if (!existing) {
-      throw new ConflictException(`${ticker} is already in the watchlist`);
+      throw new ConflictException(`${ticker} is not in the watchlist`);
     }
 
     await this.db.query(
