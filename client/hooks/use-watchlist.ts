@@ -5,6 +5,8 @@ export interface WatchlistItem {
   id: number
   ticker: string
   added_at: string
+  name: string
+  sector: string
 }
 
 const watchlistKey = ['watchlist'] as const
