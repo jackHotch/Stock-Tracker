@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Plus, Search } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -16,6 +16,7 @@ import { WatchlistItem } from '@/components/watchlist-item'
 import { useWatchlist, type WatchlistItem as IWatchlistItem } from '@/hooks/use-watchlist'
 import { useCurrentStockPrices, type StockItem } from '@/hooks/use-stock'
 import { cn } from '@/lib/utils'
+import { AddTickerDialog } from '@/components/add-ticker-dialog'
 
 type SortKey = 'ticker' | 'sector' | 'price' | 'pctChange'
 type SortDir = 'asc' | 'desc'
@@ -52,14 +53,11 @@ export default function Watchlist() {
   const query = search.trim().toLowerCase()
   const rows = watchlist
     .filter((item) => sector === ALL_SECTORS || item.sector === sector)
-    .filter(
-      (item) => !query || item.ticker.toLowerCase().includes(query) || item.name?.toLowerCase().includes(query)
-    )
+    .filter((item) => !query || item.ticker.toLowerCase().includes(query) || item.name?.toLowerCase().includes(query))
     .sort((a, b) => {
       const av = getSortValue(a, prices[a.ticker], sort.key)
       const bv = getSortValue(b, prices[b.ticker], sort.key)
 
-      // Items without data (e.g. price still loading) always go last
       if (av == null || Number.isNaN(av)) return bv == null || Number.isNaN(bv) ? 0 : 1
       if (bv == null || Number.isNaN(bv)) return -1
 
@@ -70,7 +68,6 @@ export default function Watchlist() {
   const handleSort = (key: SortKey) => {
     setSort((prev) => {
       if (prev.key === key) return { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
-      // Numbers are more useful biggest-first, text alphabetically
       return { key, dir: key === 'price' || key === 'pctChange' ? 'desc' : 'asc' }
     })
   }
@@ -79,10 +76,7 @@ export default function Watchlist() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p>Add, remove, and reorder the tickers you track</p>
-        <Button data-icon="inline-start" size="lg">
-          <Plus />
-          Add Ticker
-        </Button>
+        <AddTickerDialog />
       </div>
 
       <div className="flex items-center gap-2">
@@ -128,7 +122,6 @@ export default function Watchlist() {
               onSort={handleSort}
               className="w-24 justify-end"
             />
-            {/* Spacer matching the remove button so columns line up */}
             <div className="size-8" />
           </div>
         </div>

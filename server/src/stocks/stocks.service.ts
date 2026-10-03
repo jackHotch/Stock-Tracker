@@ -1,8 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
-import { PriceData } from './types/types';
+import { PriceData, SearchResult } from './types/types';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+
+const SEARCHABLE_TYPES = ['EQUITY', 'ETF', 'MUTUALFUND'];
+
+interface YahooQuote {
+  symbol?: string;
+  longname?: string;
+  shortname?: string;
+  exchDisp?: string;
+  quoteType?: string;
+  sector?: string;
+}
+
+export function getSector(quote: YahooQuote): string {
+  return quote.sector || (quote.quoteType === 'MUTUALFUND' ? 'Mutual Fund' : 'ETF');
+}
 
 @Injectable()
 export class StocksService {
@@ -98,6 +113,32 @@ export class StocksService {
         return ['(News unavailable)'];
       }
       return null;
+    }
+  }
+
+  async searchTickers(query: string): Promise<SearchResult[]> {
+    try {
+      const url = 'https://query1.finance.yahoo.com/v1/finance/search';
+      const { data } = await axios.get<{ quotes?: YahooQuote[] }>(url, {
+        params: { q: query, quotesCount: 20, newsCount: 0 },
+        timeout: 10000,
+      });
+
+      return (data.quotes ?? [])
+        .filter((q) => SEARCHABLE_TYPES.includes(q.quoteType ?? '') && /^[A-Z]+$/.test(q.symbol ?? ''))
+        .slice(0, 10)
+        .map((q) => ({
+          ticker: q.symbol!,
+          name: q.longname ?? q.shortname ?? '',
+          exchange: q.exchDisp ?? '',
+          type: q.quoteType!,
+          sector: getSector(q),
+        }));
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        this.logger.warn(`[${query}] Search failed: ${err.message}`);
+      }
+      return [];
     }
   }
 }
