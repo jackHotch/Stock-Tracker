@@ -17,9 +17,17 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/market-trend/server
+            set -e
+            cd ~/market-trend
             git pull origin production
-            npm install
+
+            cd server
+            npm ci
             npm run migrate
             npm run build
-            pm2 reload market-trend
+
+            cd ../client
+            npm ci
+            npm run build
+
+            pm2 reload market-trend --update-env
