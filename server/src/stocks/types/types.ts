@@ -12,3 +12,11 @@ export interface NewsItem {
   headline: string;
   pubDate: string;
 }
+
+export interface SearchResult {
+  ticker: string;
+  name: string;
+  exchange: string;
+  type: string;
+  sector: string;
+}

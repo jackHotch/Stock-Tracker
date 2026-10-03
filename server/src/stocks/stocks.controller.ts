@@ -5,6 +5,11 @@ import { StocksService } from './stocks.service';
 export class StocksController {
   constructor(private readonly stocksService: StocksService) {}
 
+  @Get('/search')
+  search(@Query('q') q: string) {
+    return q?.trim() ? this.stocksService.searchTickers(q.trim()) : [];
+  }
+
   @Get('/:ticker/price/change')
   getPriceChange(@Param('ticker') ticker: string, @Query('days') days: string) {
     return this.stocksService.getPriceChange(ticker, days ? Number(days) : null);

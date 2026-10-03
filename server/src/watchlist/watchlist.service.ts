@@ -3,6 +3,7 @@ import { AddTickerDto } from './dto/add-ticker.dto';
 import { WatchlistItem } from './dto/watchlist-item.dto';
 import { DatabaseService } from 'src/db/db.service';
 import axios from 'axios';
+import { getSector } from 'src/stocks/stocks.service';
 
 @Injectable()
 export class WatchlistService {
@@ -22,7 +23,7 @@ export class WatchlistService {
     });
 
     const name = data.quotes[0].longname ?? '';
-    const sector = data.quotes[0].sector || 'ETF';
+    const sector = getSector(data.quotes[0]);
 
     const result = await this.db.query<WatchlistItem>(
       `

@@ -33,3 +33,18 @@ export function useCurrentStockPrices(tickers: string[]) {
       >,
   })
 }
+
+export interface SearchResult {
+  ticker: string
+  name: string
+  exchange: string
+  type: string
+  sector: string
+}
+
+export function useStockSearch(query: string) {
+  return useApiQuery<SearchResult[]>([...stockKey, 'search', query], `/stocks/search?q=${encodeURIComponent(query)}`, {
+    enabled: !!query,
+    staleTime: 5 * 60_000,
+  })
+}
