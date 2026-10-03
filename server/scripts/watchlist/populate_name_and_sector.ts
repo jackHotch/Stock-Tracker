@@ -20,7 +20,7 @@ async function getNameAndSector(ticker: string): Promise<{ name: string; sector:
   });
 
   const name = data.quotes[0].longname ?? '';
-  const sector = data.quotes[0].sector || 'ETF';
+  const sector = data.quotes[0].sector || (data.quotes[0].quoteType === 'MUTUALFUND' ? 'Mutual Fund' : 'ETF');
 
   return {
     name,
@@ -58,7 +58,7 @@ async function updateItems() {
     }
 
     try {
-      updateWatchlistItem(db, item.ticker, info.name, info.sector);
+      await updateWatchlistItem(db, item.ticker, info.name, info.sector);
       console.log(`Updated ticker ${item.ticker} successfully`);
     } catch (err) {
       console.error(`Error updating watchlist item ${item.ticker}:`, err);
@@ -66,7 +66,7 @@ async function updateItems() {
     }
   }
 
-  db.end();
+  await db.end();
 }
 
 updateItems().catch((err) => {
