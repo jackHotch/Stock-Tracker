@@ -61,7 +61,7 @@ export const AddTickerDialog = () => {
         </form>
 
         {submitted && (
-          <div className="max-h-96 divide-y overflow-y-auto border">
+          <div className="max-h-[60dvh] divide-y overflow-y-auto border sm:max-h-96">
             {isFetching ? (
               <p className="p-3 text-center text-muted-foreground">Searching…</p>
             ) : isError ? (
@@ -76,9 +76,9 @@ export const AddTickerDialog = () => {
                 return (
                   <div key={result.ticker} className="flex items-center justify-between gap-3 p-3">
                     <div className="min-w-0">
-                      <div className="space-x-2">
+                      <div className="flex items-baseline gap-2">
                         <span className="font-bold">{result.ticker}</span>
-                        <span className="text-xs">{result.name}</span>
+                        <span className="truncate text-xs">{result.name}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
                         {[result.exchange, TYPE_LABELS[result.type] ?? result.type].filter(Boolean).join(' · ')}
@@ -86,7 +86,7 @@ export const AddTickerDialog = () => {
                     </div>
 
                     {added ? (
-                      <Button variant="outline" size="sm" data-icon="inline-start" disabled>
+                      <Button variant="outline" size="sm" data-icon="inline-start" className="shrink-0" disabled>
                         <Check />
                         Added
                       </Button>
@@ -94,6 +94,7 @@ export const AddTickerDialog = () => {
                       <Button
                         size="sm"
                         data-icon="inline-start"
+                        className="shrink-0"
                         disabled={adding}
                         onClick={() => addToWatchlist({ ticker: result.ticker })}
                       >
