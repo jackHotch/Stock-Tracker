@@ -15,21 +15,26 @@ export const WatchlistItem = ({ item }: WatchlistItemProps) => {
     stockPrice?.direction == 'up' ? 'text-success' : stockPrice?.direction == 'down' ? 'text-danger' : ''
 
   return (
-    <div className="flex items-center justify-between p-3">
-      <div className="space-x-2">
+    <div className="flex items-center justify-between gap-3 p-3">
+      <div className="flex min-w-0 flex-col md:flex-row md:items-baseline md:gap-2">
         <span className="font-bold">{item.ticker}</span>
-        <span className="text-xs">{item.name}</span>
+        <span className="truncate text-xs">{item.name}</span>
       </div>
 
-      <div className="flex items-center gap-10">
-        <div className="w-24">
+      <div className="flex shrink-0 items-center gap-3 md:gap-10">
+        <div className="hidden w-24 md:block">
           <span className="border border-primary p-1 text-xs text-primary">{item.sector}</span>
         </div>
-        <span className="w-24 text-right">{formatCurrency(Number(stockPrice?.priceEnd))}</span>
-        <span className={cn('w-24 text-right', directionStyles)}>
+        <span className="w-20 text-right md:w-24">{formatCurrency(Number(stockPrice?.priceEnd))}</span>
+        <span className={cn('w-20 text-right md:w-24', directionStyles)}>
           {formatPercentage(Number(stockPrice?.pctChange), true)}
         </span>
-        <Button variant="outline" size="icon" onClick={() => removeWatchlistItem(item.ticker)}>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label={`Remove ${item.ticker}`}
+          onClick={() => removeWatchlistItem(item.ticker)}
+        >
           <X />
         </Button>
       </div>
