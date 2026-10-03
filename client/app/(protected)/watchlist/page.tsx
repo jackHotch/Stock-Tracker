@@ -74,13 +74,13 @@ export default function Watchlist() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p>Add, remove, and reorder the tickers you track</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="m-0">Add, remove, and reorder the tickers you track</p>
         <AddTickerDialog />
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="relative w-64">
+        <div className="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
           <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
@@ -91,8 +91,10 @@ export default function Watchlist() {
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="outline" size="lg" data-icon="inline-end" />}>
-            {sector === ALL_SECTORS ? 'All sectors' : sector}
+          <DropdownMenuTrigger
+            render={<Button variant="outline" size="lg" data-icon="inline-end" className="max-w-[45%]" />}
+          >
+            <span className="truncate">{sector === ALL_SECTORS ? 'All sectors' : sector}</span>
             <ChevronDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -110,17 +112,30 @@ export default function Watchlist() {
       </div>
 
       <div className="corner-marks divide-y border">
-        <div className="flex items-center justify-between p-3">
+        <div className="flex items-center justify-between gap-3 p-3">
           <SortButton label="Ticker" sortKey="ticker" sort={sort} onSort={handleSort} />
-          <div className="flex items-center gap-10">
-            <SortButton label="Sector" sortKey="sector" sort={sort} onSort={handleSort} className="w-24" />
-            <SortButton label="Price" sortKey="price" sort={sort} onSort={handleSort} className="w-24 justify-end" />
+          <div className="flex items-center gap-3 md:gap-10">
+            <SortButton
+              label="Sector"
+              sortKey="sector"
+              sort={sort}
+              onSort={handleSort}
+              className="hidden w-24 md:flex"
+            />
+            <SortButton
+              label="Price"
+              sortKey="price"
+              sort={sort}
+              onSort={handleSort}
+              className="w-20 justify-end md:w-24"
+            />
             <SortButton
               label="% Change"
+              shortLabel="% Chg"
               sortKey="pctChange"
               sort={sort}
               onSort={handleSort}
-              className="w-24 justify-end"
+              className="w-20 justify-end md:w-24"
             />
             <div className="size-8" />
           </div>
@@ -140,13 +155,15 @@ export default function Watchlist() {
 
 interface SortButtonProps {
   label: string
+  /** Shown instead of label on small screens */
+  shortLabel?: string
   sortKey: SortKey
   sort: Sort
   onSort: (key: SortKey) => void
   className?: string
 }
 
-function SortButton({ label, sortKey, sort, onSort, className }: SortButtonProps) {
+function SortButton({ label, shortLabel, sortKey, sort, onSort, className }: SortButtonProps) {
   const active = sort.key === sortKey
   const Icon = !active ? ArrowUpDown : sort.dir === 'asc' ? ArrowUp : ArrowDown
 
@@ -160,7 +177,14 @@ function SortButton({ label, sortKey, sort, onSort, className }: SortButtonProps
         className
       )}
     >
-      {label}
+      {shortLabel ? (
+        <>
+          <span className="md:hidden">{shortLabel}</span>
+          <span className="hidden md:inline">{label}</span>
+        </>
+      ) : (
+        label
+      )}
       <Icon className={cn('size-3', !active && 'opacity-50')} />
     </button>
   )

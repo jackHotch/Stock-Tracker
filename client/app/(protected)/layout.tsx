@@ -17,7 +17,8 @@ export default function ProtectedLayout({
   return (
     <>
       <Header />
-      <div className="p-4">{children}</div>
+      {/* Bottom padding clears the mobile tab bar */}
+      <main className="mx-auto w-full p-4 lg:w-4/5 pb-28 md:p-6">{children}</main>
     </>
   )
 }

@@ -31,10 +31,10 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen min-w-screen flex-col gap-12 p-6">
+    <div className="flex min-h-dvh flex-col gap-10 p-4 md:gap-12 md:p-6">
       <Logo size="large" />
       <form onSubmit={handleLogin}>
-        <Container className="flex w-full flex-col gap-8 p-6 md:mx-auto md:max-w-130">
+        <Container className="flex w-full flex-col gap-8 p-5 md:mx-auto md:max-w-130 md:p-6">
           <div>
             <h2>Welcome back</h2>
             <p>Sign in to your account to continue</p>
