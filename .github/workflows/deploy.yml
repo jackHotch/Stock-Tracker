@@ -19,7 +19,8 @@ jobs:
           script: |
             set -e
             cd ~/market-trend
-            git pull origin production
+            git fetch origin production
+            git reset --hard origin/production
 
             cd server
             npm ci
