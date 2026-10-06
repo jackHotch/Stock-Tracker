@@ -34,9 +34,13 @@ export class StocksService {
       const now = Math.floor(Date.now() / 1000);
       const from = now - lookbackDays * 86400;
 
+      // Fetch an extra week before the window so weekends, holidays, and early-morning
+      // requests still have earlier trading days to fall back on
+      const bufferDays = 7;
+
       const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`;
       const { data } = await axios.get(url, {
-        params: { period1: from, period2: now, interval: '1d' },
+        params: { period1: from - bufferDays * 86400, period2: now, interval: '1d' },
         // headers: { 'User-Agent': 'Mozilla/5.0' },
         timeout: 10000,
       });
@@ -50,7 +54,12 @@ export class StocksService {
       const timestamps: number[] = result.timestamp ?? [];
       const closes: number[] = result.indicators?.quote?.[0]?.close ?? [];
 
-      const valid = timestamps.map((ts, i) => ({ ts, close: closes[i] })).filter((d) => d.close != null);
+      const all = timestamps.map((ts, i) => ({ ts, close: closes[i] })).filter((d) => d.close != null);
+
+      // Use the points inside the window, but always keep at least the last two trading days
+      const firstInWindow = all.findIndex((d) => d.ts >= from);
+      const start = Math.max(0, Math.min(firstInWindow === -1 ? all.length : firstInWindow, all.length - 2));
+      const valid = all.slice(start);
 
       if (valid.length < 2) {
         this.logger.warn(`[${ticker}] Not enough data points (${valid.length})`);
