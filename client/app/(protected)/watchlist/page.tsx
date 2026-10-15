@@ -17,6 +17,7 @@ import { useWatchlist, type WatchlistItem as IWatchlistItem } from '@/hooks/use-
 import { useCurrentStockPrices, type StockItem } from '@/hooks/use-stock'
 import { cn } from '@/lib/utils'
 import { AddTickerDialog } from '@/components/add-ticker-dialog'
+import { ContainerWithMarks } from '@/components/container-with-marks'
 
 type SortKey = 'ticker' | 'sector' | 'price' | 'pctChange'
 type SortDir = 'asc' | 'desc'
@@ -111,7 +112,7 @@ export default function Watchlist() {
         </DropdownMenu>
       </div>
 
-      <div className="corner-marks divide-y border">
+      <ContainerWithMarks className="divide-y p-0">
         <div className="flex items-center justify-between gap-3 p-3">
           <SortButton label="Ticker" sortKey="ticker" sort={sort} onSort={handleSort} />
           <div className="flex items-center gap-3 md:gap-10">
@@ -148,7 +149,7 @@ export default function Watchlist() {
         {watchlist.length > 0 && rows.length === 0 && (
           <p className="p-3 text-center text-sm text-muted-foreground">No tickers match your filters</p>
         )}
-      </div>
+      </ContainerWithMarks>
     </div>
   )
 }

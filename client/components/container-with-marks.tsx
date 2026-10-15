@@ -6,6 +6,6 @@ interface ContainerProps {
   children?: ReactNode | ReactNode[]
 }
 
-export const Container = ({ className, children }: ContainerProps) => {
+export const ContainerWithMarks = ({ className, children }: ContainerProps) => {
   return <div className={cn('corner-marks border border-border p-4', className)}>{children}</div>
 }
