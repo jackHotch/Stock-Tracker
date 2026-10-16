@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { StocksService } from './stocks.service';
 
 @Controller('stocks')
@@ -11,8 +11,8 @@ export class StocksController {
   }
 
   @Get('/:ticker/price/change')
-  getPriceChange(@Param('ticker') ticker: string, @Query('days') days: string) {
-    return this.stocksService.getPriceChange(ticker, days ? Number(days) : null);
+  getPriceChange(@Param('ticker') ticker: string, @Query('days', ParseIntPipe) days: number) {
+    return this.stocksService.getPriceChange(ticker, days);
   }
 
   @Get('/:ticker/news')

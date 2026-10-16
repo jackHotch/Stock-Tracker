@@ -9,9 +9,10 @@ import { useState } from 'react'
 
 export default function Settings() {
   const [isDirty, setIsDirty] = useState<boolean>(false)
-  const [emailEnabled, setEmailEnabled] = useState<boolean>(true)
+  const [emailsEnabled, setEmailsEnabled] = useState<boolean>(true)
   const [email, setEmail] = useState<string>('')
   const [lookbackDays, setLookbackDays] = useState<string>('')
+  const [alertThreshold, setAlertThreshold] = useState<string>('')
 
   return (
     <div className="space-y-4">
@@ -20,7 +21,7 @@ export default function Settings() {
 
         <div className="space-y-2">
           <Label htmlFor="email-enabled">Enable emails</Label>
-          <Switch id="email-enabled" checked={emailEnabled} onCheckedChange={(checked) => setEmailEnabled(checked)} />
+          <Switch id="email-enabled" checked={emailsEnabled} onCheckedChange={(checked) => setEmailsEnabled(checked)} />
         </div>
 
         <div className="space-y-2">
@@ -28,7 +29,7 @@ export default function Settings() {
           <Input
             className="w-125"
             type="email"
-            disabled={!emailEnabled}
+            disabled={!emailsEnabled}
             placeholder="example@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -40,7 +41,7 @@ export default function Settings() {
           <Input
             className="w-12"
             type="numberic"
-            disabled={!emailEnabled}
+            disabled={!emailsEnabled}
             placeholder="2"
             value={lookbackDays}
             onChange={(e) => setLookbackDays(e.target.value)}
@@ -52,10 +53,10 @@ export default function Settings() {
           <Input
             className="w-12"
             type="numberic"
-            disabled={!emailEnabled}
+            disabled={!emailsEnabled}
             placeholder="2"
-            value={lookbackDays}
-            onChange={(e) => setLookbackDays(e.target.value)}
+            value={alertThreshold}
+            onChange={(e) => setAlertThreshold(e.target.value)}
           />
         </div>
       </ContainerWithMarks>

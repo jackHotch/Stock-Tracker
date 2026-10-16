@@ -8,10 +8,11 @@ import { DatabaseService } from 'src/db/db.service';
 export class AlertsService {
   constructor(private db: DatabaseService) {}
 
-  async create(alert: CreateAlertDto): Promise<AlertItemDto> {
+  async create(userId: number, alert: CreateAlertDto): Promise<AlertItemDto> {
     const result = await this.db.query<AlertItemDto>(
       `
       INSERT INTO alerts (
+        user_id,
         ticker,
         pct_change,
         price_start,
@@ -23,10 +24,24 @@ export class AlertsService {
         threshold_pct, 
         news_headlines
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      RETURNING *
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING
+        id,
+        ticker,
+        pct_change,
+        price_start,
+        price_end,
+        date_start,
+        date_end,
+        direction,
+        lookback_days,
+        threshold_pct,
+        news_headlines,
+        email_sent,
+        triggered_at
       `,
       [
+        userId,
         alert.ticker,
         alert.pct_change,
         alert.price_start,
@@ -43,9 +58,9 @@ export class AlertsService {
     return result.rows[0];
   }
 
-  async findAll(filters: FilterAlertsDto): Promise<AlertItemDto[]> {
-    const conditions: string[] = [];
-    const params: unknown[] = [];
+  async findAll(userId: number, filters: FilterAlertsDto): Promise<AlertItemDto[]> {
+    const conditions: string[] = ['user_id = $1'];
+    const params: unknown[] = [userId];
 
     if (filters.ticker) {
       params.push(filters.ticker);
@@ -80,7 +95,7 @@ export class AlertsService {
       conditions.push(`pct_change <= $${params.length}`);
     }
 
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const where = `WHERE ${conditions.join(' AND ')}`;
 
     const result = await this.db.query<AlertItemDto>(
       `SELECT
@@ -104,7 +119,7 @@ export class AlertsService {
     return result.rows;
   }
 
-  async findOne(id: number): Promise<AlertItemDto> {
+  async findOne(userId: number, id: number): Promise<AlertItemDto> {
     const result = await this.db.query<AlertItemDto>(
       `
       SELECT 
@@ -122,20 +137,20 @@ export class AlertsService {
         email_sent,
         triggered_at
       FROM alerts
-      WHERE id = $1`,
-      [id],
+      WHERE user_id = $1 AND id = $2`,
+      [userId, id],
     );
 
     return result.rows[0];
   }
 
-  async markEmailSent(id: number): Promise<void> {
+  async markEmailSent(userId: number, id: number): Promise<void> {
     await this.db.query(
       `
       UPDATE alerts
       SET email_sent = true
-      WHERE id = $1`,
-      [id],
+      WHERE user_id = $1 AND id = $2`,
+      [userId, id],
     );
   }
 }

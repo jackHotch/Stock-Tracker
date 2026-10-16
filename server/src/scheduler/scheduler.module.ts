@@ -6,9 +6,10 @@ import { WatchlistModule } from '../watchlist/watchlist.module';
 import { StocksModule } from '../stocks/stocks.module';
 import { AlertsModule } from '../alerts/alerts.module';
 import { EmailsModule } from '../emails/emails.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), WatchlistModule, StocksModule, AlertsModule, EmailsModule],
+  imports: [ScheduleModule.forRoot(), WatchlistModule, StocksModule, AlertsModule, EmailsModule, UserModule],
   providers: [SchedulerService],
   controllers: [SchedulerController],
 })

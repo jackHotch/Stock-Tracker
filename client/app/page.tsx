@@ -8,12 +8,14 @@ import { Label } from '@/components/ui/label'
 import type { ApiError } from '@/hooks/use-api'
 import { useLogin } from '@/hooks/use-login'
 import { setAuthToken } from '@/lib/api-client'
+import { useQueryClient } from '@tanstack/react-query'
 import { TrendingUp } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function Login() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { mutate: login, isPending, error, reset } = useLogin()
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -26,6 +28,8 @@ export default function Login() {
       { email, password },
       {
         onSuccess: (data) => {
+          // Data is per-user now, so drop anything cached under a previous session
+          queryClient.clear()
           setAuthToken(data.access_token)
           router.push('/dashboard')
         },

@@ -1,19 +1,27 @@
-import { Controller, Post, HttpCode } from '@nestjs/common';
+import { Controller, Post, HttpCode, UnauthorizedException } from '@nestjs/common';
 import { EmailsService } from './emails.service';
 import { AlertItemDto } from '../alerts/dto/alert-item.dto';
+import { UserService } from '../user/user.service';
+import { UserId } from '../auth/decorators/user-id.decorator';
 
 @Controller('email')
 export class EmailsController {
-  constructor(private readonly emailService: EmailsService) {}
+  constructor(
+    private readonly emailService: EmailsService,
+    private readonly userService: UserService,
+  ) {}
 
   /**
    * POST /api/email/test
-   * Sends a single fake alert email to verify Resend is configured
-   * correctly (API key, verified domain, EMAIL_FROM/EMAIL_TO).
+   * Sends a single fake alert email to the current user's alert address to
+   * verify Resend is configured correctly (API key, verified domain, EMAIL_FROM).
    */
   @Post('test')
   @HttpCode(200)
-  async sendTest() {
+  async sendTest(@UserId() userId: number) {
+    const user = await this.userService.findOne(userId);
+    if (!user) throw new UnauthorizedException();
+
     const fakeAlert: AlertItemDto = {
       id: 0,
       ticker: 'TEST',
@@ -33,13 +41,17 @@ export class EmailsController {
       triggered_at: new Date(),
     };
 
-    const sent = await this.emailService.sendAlertEmail([fakeAlert]);
+    const sent = await this.emailService.sendAlertEmail([fakeAlert], {
+      to: this.userService.getRecipient(user),
+      threshold: fakeAlert.threshold_pct,
+      lookback: fakeAlert.lookback_days,
+    });
 
     return {
       sent,
       message: sent
         ? 'Test email sent — check your inbox.'
-        : 'Email failed to send — check RESEND_API_KEY, EMAIL_FROM, and EMAIL_TO in your .env, and check the server logs for the error.',
+        : 'Email failed to send — check RESEND_API_KEY and EMAIL_FROM in your .env, and check the server logs for the error.',
     };
   }
 }

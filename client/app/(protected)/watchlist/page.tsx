@@ -121,7 +121,7 @@ export default function Watchlist() {
               sortKey="sector"
               sort={sort}
               onSort={handleSort}
-              className="hidden w-24 md:flex"
+              className="hidden w-36 md:flex"
             />
             <SortButton
               label="Price"

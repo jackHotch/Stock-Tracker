@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
 import { PriceData, SearchResult } from './types/types';
 import axios from 'axios';
-import { ConfigService } from '@nestjs/config';
 
 const SEARCHABLE_TYPES = ['EQUITY', 'ETF', 'MUTUALFUND'];
 
@@ -23,16 +22,12 @@ export function getSector(quote: YahooQuote): string {
 export class StocksService {
   private readonly logger = new Logger(StocksService.name);
 
-  constructor(
-    private db: DatabaseService,
-    private readonly config: ConfigService,
-  ) {}
+  constructor(private db: DatabaseService) {}
 
-  async getPriceChange(ticker: string, days: number | null): Promise<PriceData | null> {
-    const lookbackDays = days ?? this.config.get<number>('LOOKBACK_DAYS', 14);
+  async getPriceChange(ticker: string, days: number): Promise<PriceData | null> {
     try {
       const now = Math.floor(Date.now() / 1000);
-      const from = now - lookbackDays * 86400;
+      const from = now - days * 86400;
 
       const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`;
       const { data } = await axios.get(url, {

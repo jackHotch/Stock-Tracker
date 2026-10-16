@@ -1,11 +1,17 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { ConfigService } from '@nestjs/config';
 import { WatchlistService } from '../watchlist/watchlist.service';
 import { StocksService } from '../stocks/stocks.service';
 import { AlertsService } from '../alerts/alerts.service';
 import { EmailsService } from '../emails/emails.service';
+import { AlertSettings, UserService, UserSettings } from '../user/user.service';
 import { AlertItemDto } from '../alerts/dto/alert-item.dto';
+
+export interface WatcherResult {
+  checked: number;
+  triggered: number;
+  emailSent: boolean;
+}
 
 @Injectable()
 export class SchedulerService {
@@ -16,7 +22,7 @@ export class SchedulerService {
     private readonly stocks: StocksService,
     private readonly alerts: AlertsService,
     private readonly email: EmailsService,
-    private readonly config: ConfigService,
+    private readonly users: UserService,
   ) {}
 
   /**
@@ -35,23 +41,45 @@ export class SchedulerService {
   @Cron('0 19 */2 * *', { timeZone: 'America/New_York' })
   async runWatcher() {
     this.logger.log('⏰ Watcher triggered');
-    await this.executeWatcher();
+    const users = await this.users.findAll();
+
+    // One user's failure (e.g. a Yahoo timeout) shouldn't skip everyone after them.
+    for (const user of users) {
+      const settings = this.users.getAlertSettings(user);
+      if (!settings) {
+        this.logger.log(`Skipping user ${user.id}: lookback days and threshold not set`);
+        continue;
+      }
+
+      try {
+        await this.watchForUser(user, settings);
+      } catch (err: unknown) {
+        this.logger.error(`Watcher failed for user ${user.id}: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    }
   }
 
   /**
-   * Manually trigger a run — called by POST /api/scheduler/run
+   * Manually trigger a run for one user — called by POST /api/scheduler/run
    */
-  async executeWatcher(): Promise<{
-    checked: number;
-    triggered: number;
-    emailSent: boolean;
-  }> {
-    const watchlist = await this.watchlist.findAll();
-    const tickers = watchlist.map((item) => item.ticker);
-    const threshold = this.config.get<number>('THRESHOLD_PCT', 8);
-    const lookback = this.config.get<number>('LOOKBACK_DAYS', 14);
+  async executeWatcher(userId: number): Promise<WatcherResult> {
+    const user = await this.users.findOne(userId);
+    if (!user) throw new UnauthorizedException();
 
-    this.logger.log(`Checking ${tickers.length} tickers (±${threshold}% / ${lookback}d)`);
+    const settings = this.users.getAlertSettings(user);
+    if (!settings) {
+      throw new BadRequestException('Set your lookback days and alert threshold in settings first');
+    }
+
+    return this.watchForUser(user, settings);
+  }
+
+  private async watchForUser(user: UserSettings, settings: AlertSettings): Promise<WatcherResult> {
+    const watchlist = await this.watchlist.findAll(user.id);
+    const tickers = watchlist.map((item) => item.ticker);
+    const { threshold, lookback } = settings;
+
+    this.logger.log(`User ${user.id}: checking ${tickers.length} tickers (±${threshold}% / ${lookback}d)`);
 
     const triggered: AlertItemDto[] = [];
 
@@ -63,11 +91,11 @@ export class SchedulerService {
 
       this.logger.log(`    ${price.dateStart}→${price.dateEnd}: ${price.pctChange > 0 ? '+' : ''}${price.pctChange}%`);
 
-      if (Math.abs(price.pctChange) >= Number(threshold)) {
+      if (Math.abs(price.pctChange) >= threshold) {
         this.logger.log(`    ✅ ALERT`);
         const headlines = await this.stocks.getNews(ticker);
 
-        const alert = await this.alerts.create({
+        const alert = await this.alerts.create(user.id, {
           ticker: price.ticker,
           pct_change: price.pctChange,
           price_start: price.priceStart,
@@ -76,7 +104,7 @@ export class SchedulerService {
           date_end: price.dateEnd,
           direction: price.direction,
           lookback_days: lookback,
-          threshold_pct: Number(threshold),
+          threshold_pct: threshold,
           news_headlines: headlines,
         });
 
@@ -86,16 +114,16 @@ export class SchedulerService {
 
     let emailSent = false;
 
-    if (triggered.length > 0) {
-      emailSent = await this.email.sendAlertEmail(triggered);
+    if (triggered.length > 0 && user.emails_enabled) {
+      emailSent = await this.email.sendAlertEmail(triggered, settings);
       if (emailSent) {
         for (const alert of triggered) {
-          await this.alerts.markEmailSent(alert.id);
+          await this.alerts.markEmailSent(user.id, alert.id);
         }
       }
     }
 
-    this.logger.log(`Done. ${triggered.length} alert(s), email sent: ${emailSent}`);
+    this.logger.log(`User ${user.id} done. ${triggered.length} alert(s), email sent: ${emailSent}`);
     return { checked: tickers.length, triggered: triggered.length, emailSent };
   }
 }

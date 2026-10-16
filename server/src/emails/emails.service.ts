@@ -15,11 +15,11 @@ export class EmailsService {
     }
   }
 
-  async sendAlertEmail(alerts: AlertItemDto[]): Promise<boolean> {
+  async sendAlertEmail(
+    alerts: AlertItemDto[],
+    { to, threshold, lookback }: { to: string; threshold: number; lookback: number },
+  ): Promise<boolean> {
     const from = this.config.get('EMAIL_FROM');
-    const to = this.config.get('EMAIL_TO');
-    const threshold = this.config.get('THRESHOLD_PCT', 8);
-    const lookback = this.config.get('LOOKBACK_DAYS', 14);
 
     if (!from || !to || !this.resend) {
       this.logger.warn('Email credentials not configured — skipping email');
@@ -36,7 +36,7 @@ export class EmailsService {
     const sorted = [...alerts].sort((a, b) => b.pct_change - a.pct_change);
 
     const subject = `Stock Trend Alert — ${alerts.length} ticker(s) moved ±${threshold}%+ (${today})`;
-    const html = this.buildHtml(sorted, today, Number(threshold), Number(lookback));
+    const html = this.buildHtml(sorted, today, threshold, lookback);
 
     try {
       const { error } = await this.resend.emails.send({

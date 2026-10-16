@@ -22,7 +22,7 @@ export const WatchlistItem = ({ item }: WatchlistItemProps) => {
       </div>
 
       <div className="flex shrink-0 items-center gap-3 md:gap-10">
-        <div className="hidden w-24 md:block">
+        <div className="hidden w-36 md:block">
           <span className="border border-primary p-1 text-xs text-primary">{item.sector}</span>
         </div>
         <span className="w-20 text-right md:w-24">{formatCurrency(Number(stockPrice?.priceEnd))}</span>

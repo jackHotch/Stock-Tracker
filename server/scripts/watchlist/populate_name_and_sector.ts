@@ -45,7 +45,7 @@ async function updateItems() {
   console.log('Database connection created!');
 
   const { rows: watchlistItems } = await db.query(`
-    SELECT ticker 
+    SELECT DISTINCT ticker
     FROM watchlist`);
 
   for (const item of watchlistItems) {

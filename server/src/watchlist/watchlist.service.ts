@@ -9,8 +9,8 @@ import { getSector } from 'src/stocks/stocks.service';
 export class WatchlistService {
   constructor(private db: DatabaseService) {}
 
-  async create(item: AddTickerDto): Promise<WatchlistItem> {
-    const existing = await this.findOne(item.ticker);
+  async create(userId: number, item: AddTickerDto): Promise<WatchlistItem> {
+    const existing = await this.findOne(userId, item.ticker);
 
     if (existing) {
       throw new ConflictException(`${item.ticker} is already in the watchlist`);
@@ -27,41 +27,45 @@ export class WatchlistService {
 
     const result = await this.db.query<WatchlistItem>(
       `
-      INSERT INTO watchlist (ticker, name, sector)
-      VALUES ($1, $2, $3)
-      RETURNING *;
+      INSERT INTO watchlist (user_id, ticker, name, sector)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, ticker, name, sector, added_at;
       `,
-      [item.ticker, name, sector],
+      [userId, item.ticker, name, sector],
     );
 
     return result.rows[0];
   }
 
-  async findOne(ticker: string): Promise<WatchlistItem> {
+  async findOne(userId: number, ticker: string): Promise<WatchlistItem> {
     const result = await this.db.query<WatchlistItem>(
       `
       SELECT id, ticker, name, sector, added_at
       FROM watchlist
-      WHERE ticker = $1;
+      WHERE user_id = $1 AND ticker = $2;
     `,
-      [ticker],
+      [userId, ticker],
     );
 
     return result.rows[0];
   }
 
-  async findAll(): Promise<WatchlistItem[]> {
-    const result = await this.db.query<WatchlistItem>(`
+  async findAll(userId: number): Promise<WatchlistItem[]> {
+    const result = await this.db.query<WatchlistItem>(
+      `
       SELECT id, ticker, name, sector, added_at
       FROM watchlist
+      WHERE user_id = $1
       ORDER BY ticker ASC;
-      `);
+      `,
+      [userId],
+    );
 
     return result.rows;
   }
 
-  async remove(ticker: string): Promise<void> {
-    const existing = await this.findOne(ticker);
+  async remove(userId: number, ticker: string): Promise<void> {
+    const existing = await this.findOne(userId, ticker);
 
     if (!existing) {
       throw new ConflictException(`${ticker} is not in the watchlist`);
@@ -70,8 +74,8 @@ export class WatchlistService {
     await this.db.query(
       `
       DELETE FROM watchlist
-      WHERE ticker = $1`,
-      [ticker],
+      WHERE user_id = $1 AND ticker = $2`,
+      [userId, ticker],
     );
   }
 }
